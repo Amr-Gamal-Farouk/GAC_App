@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gac/data_provider/model/employ_model.dart';
@@ -36,12 +38,12 @@ class _EmployItemState extends State<EmployItem> {
            Row(
              children: [
                Container(
-                 width: 40,
-                 height: 40,
-                 decoration: const BoxDecoration(
-                     // image: DecorationImage(image: AssetImage("assets/images/user.png"))
-                 ),
-                 child: Icon(Icons.person,color: Colors.indigo),
+                   width: 40,
+                   height: 40,
+                   decoration:  BoxDecoration(
+                     borderRadius: BorderRadius.circular(50),
+                     border: Border.all(color: Colors.indigo,width: 1),
+                     image: DecorationImage(image: MemoryImage(base64Decode(widget.employ.photo.split(',').last)),fit: BoxFit.fill),)
                ),
                const SizedBox(width: 20,),
                 // Text(widget.employ.empFullName),
