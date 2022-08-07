@@ -7,6 +7,7 @@ import 'package:gac/screen/responsive_layout.dart';
 import 'package:gac/screen/search_screen.dart';
 import 'package:gac/screen/splash_screen.dart';
 import 'package:gac/util/theme.dart';
+import 'package:gac/widget/my_drawer.dart';
 import 'package:provider/provider.dart';
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -49,7 +50,7 @@ class _MyAppState extends State<MyApp> {
               debugShowCheckedModeBanner: false,
               title: 'GAC Egypt',
               theme: appTheme,
-              home:  LoginScreen(),//HomeScreenOption2(),
+              home: LoginScreen(),//HomeScreenOption2(),
             ),
           );
         }
