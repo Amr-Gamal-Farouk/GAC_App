@@ -1,6 +1,7 @@
 
 
 
+import 'package:gac/data_provider/model/current_user.dart';
 import 'package:gac/data_provider/model/employ_model.dart';
 import 'package:gac/data_provider/model/login_model.dart';
 import 'package:gac/data_provider/model/response_model.dart';
@@ -21,6 +22,11 @@ class UserRepository {
     return UserService.login(userName: userName, pass: pass);
   }
 
+  Future<ResponseModel> logout({required String token}) async{
+    print("!!! ${UserService.logout(token: token)}");
+    return UserService.logout(token: token);
+  }
+
   Future<ResponseModel<List<EmployModel>>> getEmploys({required String token}) async{
 
     print("!!! > $token");
@@ -32,5 +38,11 @@ class UserRepository {
     print("222222 ${UserService.getEmployDetails(userId: userId,token: token)}");
 
     return  UserService.getEmployDetails(userId: userId,token: token);
+  }
+
+  Future<ResponseModel<EmployModel>> getCurrentUser({required String token}) async {
+    print("222222 ${UserService.getCurrentUser(token: token)}");
+
+    return  UserService.getCurrentUser(token: token);
   }
 }

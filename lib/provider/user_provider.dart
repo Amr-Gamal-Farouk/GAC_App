@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gac/data_provider/model/current_user.dart';
 import 'package:gac/data_provider/model/employ_model.dart';
 import 'package:gac/data_provider/model/login_model.dart';
 import 'package:gac/data_provider/model/response_model.dart';
@@ -22,6 +23,7 @@ class UserProvider extends ChangeNotifier{
   List<EmployModel> favoriteEmployees=[];
   List<Contact> contactList=[];
   LoginModel? currentUser;
+  EmployModel? currentUserData;
    UserModel? selectedUser;
   int? errorCode;
 
@@ -45,6 +47,37 @@ class UserProvider extends ChangeNotifier{
 
           String data=jsonEncode(currentUser);
           await prefs.setString('token', data);
+
+          notifyListeners();
+          return true;
+        }else{
+          print("ERROR => ${userResponseModel.errorModel?.errorCode} : ${userResponseModel.errorModel?.errorMessage}");
+          errorCode= userResponseModel.errorModel?.errorCode;
+          notifyListeners();
+          return false;
+        }
+
+      }catch(e){
+        print("EX>> $e");
+        // rethrow;
+        notifyListeners();
+        return false;
+      }
+
+  }
+
+  Future<bool> logout({required String token}) async{
+
+    final prefs = await SharedPreferences.getInstance();
+
+      try{
+        ResponseModel userResponseModel =await userRepository.logout(token: token);
+        // print (userResponseModel);
+        if(userResponseModel.isSuccess){
+          print("QQ>> ${userResponseModel.responseData}");
+
+          await prefs.remove("token");
+
 
           notifyListeners();
           return true;
@@ -107,12 +140,37 @@ class UserProvider extends ChangeNotifier{
     }
 
   }
+
   Future<bool> getEmployDetails({required String userId,required String token}) async{
     try{
       ResponseModel<UserModel> userResponseModel =await userRepository.getEmployDetails(userId: userId,token: token );
       if(userResponseModel.isSuccess){
         selectedUser=userResponseModel.responseData!;
         print ("Selected Employee>> $selectedUser");
+
+        notifyListeners();
+        return true;
+      }else{
+       print("ERROR => ${userResponseModel.errorModel?.errorCode} : ${userResponseModel.errorModel?.errorMessage}");
+       errorCode= userResponseModel.errorModel?.errorCode;
+       notifyListeners();
+        return false;
+      }
+
+    }catch(e){
+      notifyListeners();
+      return false;
+    }
+
+  }
+
+
+  Future<bool> getCurrentUser({required String token}) async{
+    try{
+      ResponseModel<EmployModel> userResponseModel =await userRepository.getCurrentUser(token: token );
+      if(userResponseModel.isSuccess){
+        currentUserData=userResponseModel.responseData!;
+        print ("current User Data>> $currentUserData");
 
         notifyListeners();
         return true;

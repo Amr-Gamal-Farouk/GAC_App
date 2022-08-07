@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:gac/data_provider/model/current_user.dart';
 import 'package:gac/data_provider/model/employ_model.dart';
 import 'package:gac/data_provider/model/login_model.dart';
 import 'package:gac/data_provider/model/response_model.dart';
@@ -37,6 +38,30 @@ class UserService {
         parserFunction: (userJson) {
           return LoginModel.fromJson(userJson);
         });
+    print("<><> ${responseModel.responseData}");
+
+    return ResponseModel(
+      responseData: (responseModel.isSuccess)? LoginModel.fromJson(responseModel.responseData):
+      null,
+      isSuccess: responseModel.isSuccess,
+      errorModel: responseModel.errorModel,
+    );
+  }
+// logout
+  static Future<ResponseModel> logout({required String token}) async {
+
+
+    ResponseModel responseModel = await NetworkUtilities.handlePostRequest(
+      // acceptJson: true,
+
+        methodURL: '${URL.getURL(functionName: URL.KLogout(),baseUrl: 1)}',
+        requestHeaders: {
+          "Authorization": "Bearer $token",
+        },
+        // parserFunction: (userJson) {
+        //   return LoginModel.fromJson(userJson);
+        // }
+        );
     print("<><> ${responseModel.responseData}");
 
     return ResponseModel(
@@ -97,6 +122,35 @@ class UserService {
     print("11111 ${responseModel.responseData}");
 
     return ResponseModel<UserModel>(
+      responseData: (responseModel.isSuccess)?responseModel.responseData:
+      null,
+      isSuccess: responseModel.isSuccess,
+      errorModel: responseModel.errorModel,
+    );
+  }
+
+  //get current user
+  static Future<ResponseModel<EmployModel>> getCurrentUser({required String token}) async {
+    // Map<String, String> requestHeaders = NetworkUtilities.getHeaders(
+    //     customHeaders: {
+    //       "Content-type": "application/json",
+    //       "Accept": "application/json",
+    //       "Authorization": "<Your token>"
+    //     });
+
+    ResponseModel responseModel = await NetworkUtilities.handleGetRequest(
+
+        methodURL: '${URL.getURL(functionName: URL.KGetCurrentUser(),baseUrl:  1)}',
+         requestHeaders: {
+    "Authorization": "Bearer $token",
+    },
+        parserFunction: (userJson) {
+          return EmployModel.fromJson(json.decode(userJson)[0]);
+        });
+
+    print("current user>> ${responseModel.responseData}");
+
+    return ResponseModel<EmployModel>(
       responseData: (responseModel.isSuccess)?responseModel.responseData:
       null,
       isSuccess: responseModel.isSuccess,
