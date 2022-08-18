@@ -29,7 +29,7 @@ class UserProvider extends ChangeNotifier{
 
 
 
-
+  //login
   Future<bool> loginAction({required String userName, required String pass}) async{
 
     final prefs = await SharedPreferences.getInstance();
@@ -64,7 +64,36 @@ class UserProvider extends ChangeNotifier{
 
   }
 
+  //logout
+  Future<bool> logoutAction({required String token}) async{
 
+    final prefs = await SharedPreferences.getInstance();
+
+    try{
+      ResponseModel userResponseModel =await userRepository.logout(token: token);
+      if(userResponseModel.isSuccess){
+        print("QQ>> ${userResponseModel.responseData}");
+        currentUser=null;
+        await prefs.remove('token');
+        notifyListeners();
+        return true;
+      }else{
+        print("ERROR => ${userResponseModel.errorModel?.errorCode} : ${userResponseModel.errorModel?.errorMessage}");
+        errorCode= userResponseModel.errorModel?.errorCode;
+        notifyListeners();
+        return false;
+      }
+
+    }catch(e){
+      print("EX>> $e");
+      // rethrow;
+      notifyListeners();
+      return false;
+    }
+
+  }
+
+  //get all Employees
   Future<bool> getEmploys({required String token}) async{
 
     final prefs = await SharedPreferences.getInstance();
@@ -107,6 +136,8 @@ class UserProvider extends ChangeNotifier{
     }
 
   }
+
+  //get employee details by ID
   Future<bool> getEmployDetails({required String userId,required String token}) async{
     try{
       ResponseModel<UserModel> userResponseModel =await userRepository.getEmployDetails(userId: userId,token: token );

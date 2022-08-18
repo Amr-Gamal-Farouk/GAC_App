@@ -11,6 +11,7 @@ class URL {
   static String KGetAllEmploys()=> "GetEmployeeData";
   static String KGetEmploysDetails({required String code})=> "GetContactData?Code=$code";
   static String KLogin()=> "login";
+  static String KLogout()=> "logout";
 
   static String getURL({String? functionName,required int baseUrl}) {
     if(baseUrl==1){

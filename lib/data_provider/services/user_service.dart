@@ -47,6 +47,33 @@ class UserService {
     );
   }
 
+  // logout
+  static Future<ResponseModel> logout({ required String token}) async {
+    Map<String, String> requestHeaders = NetworkUtilities.getHeaders(
+        customHeaders: {
+          "Content-type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+
+        });
+
+
+    ResponseModel responseModel = await NetworkUtilities.handlePostRequest(
+        acceptJson: true,
+        methodURL: '${URL.getURL(functionName: URL.KLogout(),baseUrl: 1)}',
+        requestHeaders: requestHeaders,
+        );
+    print("<><> ${responseModel.responseData}");
+
+    return ResponseModel(
+      responseData: (responseModel.isSuccess)? responseModel.responseData:
+      null,
+      isSuccess: responseModel.isSuccess,
+      errorModel: responseModel.errorModel,
+    );
+  }
+
+
   //get all users
   static Future<ResponseModel<List<EmployModel>>> getEmploys({required String token}) async {
     // Map<String, String> requestHeaders = NetworkUtilities.getHeaders(
