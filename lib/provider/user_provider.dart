@@ -53,6 +53,15 @@ class UserProvider extends ChangeNotifier{
 
   }
 
+  clearSavedData() async{
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+    prefs.remove('currentUser');
+    prefs.remove('currentLoggedUserData');
+
+
+  }
+
 
 
   Future<bool> loginAction({required String userName, required String pass}) async{

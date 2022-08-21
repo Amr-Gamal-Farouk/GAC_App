@@ -13,7 +13,7 @@ class CustomText extends StatelessWidget {
       child: Row(
         children: [
           Text(title,style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black45,fontStyle: FontStyle.italic,)),
-          SizedBox(width: 28,),
+          SizedBox(width: 20,),
           Text(value,style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black45,fontStyle: FontStyle.italic,)),
 
         ],

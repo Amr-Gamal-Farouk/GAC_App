@@ -55,20 +55,19 @@ class UserService {
 
 
     ResponseModel responseModel = await NetworkUtilities.handlePostRequest(
-      // acceptJson: true,
-
         methodURL: '${URL.getURL(functionName: URL.KLogout(),baseUrl: 1)}',
         requestHeaders: {
           "Authorization": "Bearer $token",
         },
+      requestBody: {"logout":"logout"},
         // parserFunction: (userJson) {
-        //   return LoginModel.fromJson(userJson);
-        // }
+        //   return {};
+        // },
         );
     print("<><> ${responseModel.responseData}");
 
     return ResponseModel(
-      responseData: (responseModel.isSuccess)? LoginModel.fromJson(responseModel.responseData):
+      responseData: (responseModel.isSuccess)? "done":
       null,
       isSuccess: responseModel.isSuccess,
       errorModel: responseModel.errorModel,
@@ -189,7 +188,7 @@ class UserService {
     "Authorization": "Bearer $token",
     },
         parserFunction: (userJson) {
-          return leaveModelFromJson(json.decode(userJson));
+          return leaveModelFromJson(userJson);
         });
 
     print("Leave Balance>> ${responseModel.responseData}");
@@ -211,7 +210,7 @@ class UserService {
     "Authorization": "Bearer $token",
     },
         parserFunction: (userJson) {
-          return publicHolidaysModelFromJson(json.decode(userJson));
+          return publicHolidaysModelFromJson(userJson);
         });
 
     print("Public Holidays>> ${responseModel.responseData}");

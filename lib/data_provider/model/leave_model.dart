@@ -27,11 +27,11 @@ class LeaveModel {
   String code;
   int year;
   String leaveType;
-  int daysAllowed;
+  double daysAllowed;
   double carriedForward;
-  int refill;
-  int daysUsed;
-  int balance;
+  double refill;
+  double daysUsed;
+  double balance;
 
   factory LeaveModel.fromJson(Map<String, dynamic> json) => LeaveModel(
     id: json["id"],

@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:gac/provider/user_provider.dart';
+import 'package:gac/screen/leave_balance_screen.dart';
+import 'package:gac/screen/login_screen.dart';
 import 'package:gac/screen/mission.dart';
+import 'package:gac/screen/public_holidays.dart';
 import 'package:gac/screen/vision.dart';
 import 'package:gac/widget/custom_icon_text.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +20,13 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
+
+  late UserProvider _userProvider;
+  @override
+  void initState() {
+    super.initState();
+    _userProvider=Provider.of<UserProvider>(context,listen: false);
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(builder: (context, value, child) {
@@ -26,7 +36,7 @@ class _MyDrawerState extends State<MyDrawer> {
             padding :EdgeInsets.only(left: 30),
             width:260,
             // color:Colors.indigo,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.bottomRight,
@@ -69,14 +79,14 @@ class _MyDrawerState extends State<MyDrawer> {
                 ),
 
                 CustomIconText(text: "Leave Balance", icon: Icons.celebration,tapAction: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Mission(),));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LeaveBalanceScreen(),));
                 }),
                 CustomIconText(text: "Public Holidays", icon: Icons.holiday_village,tapAction: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Mission(),));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PublicHolidays(),));
                 }),
-                CustomIconText(text: "Department Chart", icon: Icons.account_box,tapAction: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Mission(),));
-                }),
+                // CustomIconText(text: "Department Chart", icon: Icons.account_box,tapAction: (){
+                //   Navigator.push(context, MaterialPageRoute(builder: (context) => Mission(),));
+                // }),
                 CustomIconText(text: "Mission", icon: Icons.work,tapAction: (){
                   Navigator.push(context, MaterialPageRoute(builder: (context) => Mission(),));
                 }),
@@ -92,7 +102,12 @@ class _MyDrawerState extends State<MyDrawer> {
           Positioned(
             bottom: 10,
             left: 30,
-            child: CustomIconText(text: "Logout", icon: Icons.logout,),
+            child: CustomIconText(text: "Logout", icon: Icons.logout,tapAction: ()async{
+              if(await _userProvider.logout(token: _userProvider.currentUser!.token)){
+                _userProvider.clearSavedData();
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginScreen(),), (route) => false);
+              }
+            }),
           )
         ],
       );

@@ -104,12 +104,14 @@ class NetworkUtilities {
           .timeout(const Duration(seconds: 30), onTimeout: () {
         throw SocketException;
       });
+      print("${serverResponse.body} aa ${serverResponse.statusCode} ");
+
       if (serverResponse.statusCode == 200|| serverResponse.statusCode==201
           ||serverResponse.statusCode == 202) {
         postResponse = ResponseModel(
           isSuccess: true,
           errorModel: null,
-          responseData: json.decode(serverResponse.body),
+          responseData: (serverResponse.body!="")?json.decode(serverResponse.body):"done",
         );
       } else {
         postResponse = handleError(serverResponse);
@@ -132,7 +134,7 @@ class NetworkUtilities {
         postResponse = ResponseModel(
           isSuccess: false,
           errorModel: ErrorModel(
-            errorMessage: '',
+            errorMessage: exception.toString(),
             errorCode: HttpStatus.serviceUnavailable,
           ),
           responseData: null,
