@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/user_provider.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -11,6 +14,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late UserProvider _userProvider;
+
 
 
   design(){
@@ -95,6 +100,13 @@ class _SplashScreenState extends State<SplashScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _userProvider=Provider.of<UserProvider>(context,listen: false);
+    _userProvider.splashAction();
   }
 
   @override

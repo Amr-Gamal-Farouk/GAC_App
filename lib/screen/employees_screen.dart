@@ -27,6 +27,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
   }
   getData()async{
     await _userState.getCurrentUser(token: _userState.currentUser!.token);
+    await _userState.getCurrentUserLogged(token: _userState.currentUser!.token);
     await _userState.getEmploys(token: _userState.currentUser!.token);
 
     setState(() {

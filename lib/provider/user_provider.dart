@@ -4,8 +4,11 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gac/data_provider/model/current_user.dart';
+import 'package:gac/data_provider/model/department_chart.dart';
 import 'package:gac/data_provider/model/employ_model.dart';
+import 'package:gac/data_provider/model/leave_model.dart';
 import 'package:gac/data_provider/model/login_model.dart';
+import 'package:gac/data_provider/model/public_holidays_model.dart';
 import 'package:gac/data_provider/model/response_model.dart';
 import 'package:gac/data_provider/model/user_model.dart';
 import 'package:gac/repository/user_repository.dart';
@@ -22,13 +25,33 @@ class UserProvider extends ChangeNotifier{
   List<EmployModel> employeeSearchList=[];
   List<EmployModel> favoriteEmployees=[];
   List<Contact> contactList=[];
+  List<LeaveModel> currentUserLeaves=[];
+  List<DepartmentChartModel> currentUserDepartmentChart=[];
+  List<PublicHolidaysModel> publicHolidays=[];
+  // token
   LoginModel? currentUser;
-  EmployModel? currentUserData;
+  // data
+  CurrentUserModel? currentUserData;
+  EmployModel? currentLoggedUserData;
    UserModel? selectedUser;
   int? errorCode;
 
 
 
+  splashAction() async{
+    final prefs = await SharedPreferences.getInstance();
+     // String? token=prefs.getString("token");
+     // String? userData=prefs.getString("currentUser");
+     // String? employeesData=prefs.getString("employeeList");
+     if(prefs.containsKey("token")&&prefs.containsKey("currentUser")){
+       currentUser= loginModelFromJson( prefs.getString('token').toString());
+       currentUserData= currentUserModelFromJson( prefs.getString('currentUser').toString());
+       currentLoggedUserData= EmployModel.fromJson( jsonDecode(prefs.getString('currentLoggedUserData').toString()));
+     }
+
+     notifyListeners();
+
+  }
 
 
 
@@ -72,13 +95,9 @@ class UserProvider extends ChangeNotifier{
 
       try{
         ResponseModel userResponseModel =await userRepository.logout(token: token);
-        // print (userResponseModel);
         if(userResponseModel.isSuccess){
           print("QQ>> ${userResponseModel.responseData}");
-
           await prefs.remove("token");
-
-
           notifyListeners();
           return true;
         }else{
@@ -166,11 +185,114 @@ class UserProvider extends ChangeNotifier{
 
 
   Future<bool> getCurrentUser({required String token}) async{
+    final prefs = await SharedPreferences.getInstance();
+
+
     try{
-      ResponseModel<EmployModel> userResponseModel =await userRepository.getCurrentUser(token: token );
+      ResponseModel<CurrentUserModel> userResponseModel =await userRepository.getCurrentUser(token: token );
       if(userResponseModel.isSuccess){
         currentUserData=userResponseModel.responseData!;
         print ("current User Data>> $currentUserData");
+        await prefs.setString('currentUser', json.encode(currentUserData));
+
+        notifyListeners();
+        return true;
+      }else{
+       print("ERROR => ${userResponseModel.errorModel?.errorCode} : ${userResponseModel.errorModel?.errorMessage}");
+       errorCode= userResponseModel.errorModel?.errorCode;
+       notifyListeners();
+        return false;
+      }
+
+    }catch(e){
+      notifyListeners();
+      return false;
+    }
+
+  }
+
+  Future<bool> getCurrentUserLogged({required String token}) async{
+    final prefs = await SharedPreferences.getInstance();
+
+
+    try{
+      ResponseModel<EmployModel> userResponseModel =await userRepository.getCurrentUserLogged(token: token );
+      if(userResponseModel.isSuccess){
+        currentLoggedUserData=userResponseModel.responseData!;
+        print ("current logged User Data>> $currentLoggedUserData + ${currentLoggedUserData!.name}" );
+        await prefs.setString('currentLoggedUserData', json.encode(currentLoggedUserData));
+
+        notifyListeners();
+        return true;
+      }else{
+       print("ERROR => ${userResponseModel.errorModel?.errorCode} : ${userResponseModel.errorModel?.errorMessage}");
+       errorCode= userResponseModel.errorModel?.errorCode;
+       notifyListeners();
+        return false;
+      }
+
+    }catch(e){
+      notifyListeners();
+      return false;
+    }
+
+  }
+
+  Future<bool> getLeaveBalance({required String token,required String code}) async{
+
+    try{
+      ResponseModel<List<LeaveModel>> userResponseModel =await userRepository.getLeaveBalance(token: token,code: code );
+      if(userResponseModel.isSuccess){
+        currentUserLeaves=userResponseModel.responseData!;
+        print ("current user leave balance>> $currentUserLeaves" );
+
+        notifyListeners();
+        return true;
+      }else{
+       print("ERROR => ${userResponseModel.errorModel?.errorCode} : ${userResponseModel.errorModel?.errorMessage}");
+       errorCode= userResponseModel.errorModel?.errorCode;
+       notifyListeners();
+        return false;
+      }
+
+    }catch(e){
+      notifyListeners();
+      return false;
+    }
+
+  }
+
+  Future<bool> getDepartmentChart({required String token,required String code}) async{
+
+    try{
+      ResponseModel<List<DepartmentChartModel>> userResponseModel =await userRepository.getDepartmentChart(token: token,code: code );
+      if(userResponseModel.isSuccess){
+        currentUserDepartmentChart=userResponseModel.responseData!;
+        print ("current user leave balance>> $currentUserDepartmentChart" );
+
+        notifyListeners();
+        return true;
+      }else{
+       print("ERROR => ${userResponseModel.errorModel?.errorCode} : ${userResponseModel.errorModel?.errorMessage}");
+       errorCode= userResponseModel.errorModel?.errorCode;
+       notifyListeners();
+        return false;
+      }
+
+    }catch(e){
+      notifyListeners();
+      return false;
+    }
+
+  }
+
+  Future<bool> getPublicHolidays({required String token}) async{
+
+    try{
+      ResponseModel<List<PublicHolidaysModel>> userResponseModel =await userRepository.getPublicHolidays(token: token );
+      if(userResponseModel.isSuccess){
+        publicHolidays=userResponseModel.responseData!;
+        print ("current user leave balance>> $publicHolidays" );
 
         notifyListeners();
         return true;

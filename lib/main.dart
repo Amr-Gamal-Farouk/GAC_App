@@ -6,6 +6,7 @@ import 'package:gac/screen/login_screen.dart';
 import 'package:gac/screen/responsive_layout.dart';
 import 'package:gac/screen/search_screen.dart';
 import 'package:gac/screen/splash_screen.dart';
+import 'package:gac/screen/start_app.dart';
 import 'package:gac/util/theme.dart';
 import 'package:gac/widget/my_drawer.dart';
 import 'package:provider/provider.dart';
@@ -27,35 +28,39 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
 
-    return FutureBuilder(
-      future: Init.instance.initialize(),
-      builder: (context, AsyncSnapshot snapshot) {
-        // Show splash screen while waiting for app resources to load:
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return  MaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: appTheme,
-              home: const SplashScreen());
-        } else {
-          // Loading is done, return the app:
-          return MultiProvider(
+    return MultiProvider(
 
-            providers: [
-              ChangeNotifierProvider.value(
-                value: UserProvider(),
-              ),
-            ],
+      providers: [
+        ChangeNotifierProvider.value(
+          value: UserProvider(),
+        ),
+      ],
 
-            child: MaterialApp(
+      child: FutureBuilder(
+        future: Init.instance.initialize(),
+        builder: (context, AsyncSnapshot snapshot) {
+          // Show splash screen while waiting for app resources to load:
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return  MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: appTheme,
+                home: const SplashScreen());
+          } else {
+            // Loading is done, return the app:
+            return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'GAC Egypt',
               theme: appTheme,
-              home: LoginScreen(),//HomeScreenOption2(),
-            ),
-          );
-        }
-      },
-    ) ;
+              home: StartApp(),//HomeScreenOption2(),
+            );
+          }
+        },
+      )
+
+
+    );
+
+
   }
 }
 

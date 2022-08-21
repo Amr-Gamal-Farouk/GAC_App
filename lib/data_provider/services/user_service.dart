@@ -5,8 +5,11 @@
 import 'dart:convert';
 
 import 'package:gac/data_provider/model/current_user.dart';
+import 'package:gac/data_provider/model/department_chart.dart';
 import 'package:gac/data_provider/model/employ_model.dart';
+import 'package:gac/data_provider/model/leave_model.dart';
 import 'package:gac/data_provider/model/login_model.dart';
+import 'package:gac/data_provider/model/public_holidays_model.dart';
 import 'package:gac/data_provider/model/response_model.dart';
 import 'package:gac/data_provider/model/user_model.dart';
 import 'package:gac/util/network_utilities.dart';
@@ -74,10 +77,6 @@ class UserService {
 
   //get all users
   static Future<ResponseModel<List<EmployModel>>> getEmploys({required String token}) async {
-    // Map<String, String> requestHeaders = NetworkUtilities.getHeaders(
-    //     customHeaders: {
-    //       "Authorization": "Bearer $token",
-    //     });
 
     ResponseModel responseModel = await NetworkUtilities.handleGetRequest(
 
@@ -102,12 +101,6 @@ class UserService {
 
   //get employ details
   static Future<ResponseModel<UserModel>> getEmployDetails({required String userId,required String token}) async {
-    // Map<String, String> requestHeaders = NetworkUtilities.getHeaders(
-    //     customHeaders: {
-    //       "Content-type": "application/json",
-    //       "Accept": "application/json",
-    //       "Authorization": "<Your token>"
-    //     });
 
     ResponseModel responseModel = await NetworkUtilities.handleGetRequest(
 
@@ -130,7 +123,7 @@ class UserService {
   }
 
   //get current user
-  static Future<ResponseModel<EmployModel>> getCurrentUser({required String token}) async {
+  static Future<ResponseModel<CurrentUserModel>> getCurrentUser({required String token}) async {
     // Map<String, String> requestHeaders = NetworkUtilities.getHeaders(
     //     customHeaders: {
     //       "Content-type": "application/json",
@@ -145,12 +138,106 @@ class UserService {
     "Authorization": "Bearer $token",
     },
         parserFunction: (userJson) {
+          return CurrentUserModel.fromJson(json.decode(userJson));
+        });
+
+    print("current user>> ${responseModel.responseData}");
+
+    return ResponseModel<CurrentUserModel>(
+      responseData: (responseModel.isSuccess)?responseModel.responseData:
+      null,
+      isSuccess: responseModel.isSuccess,
+      errorModel: responseModel.errorModel,
+    );
+  }
+
+  static Future<ResponseModel<EmployModel>> getCurrentUserLogged({required String token}) async {
+    // Map<String, String> requestHeaders = NetworkUtilities.getHeaders(
+    //     customHeaders: {
+    //       "Content-type": "application/json",
+    //       "Accept": "application/json",
+    //       "Authorization": "<Your token>"
+    //     });
+
+    ResponseModel responseModel = await NetworkUtilities.handleGetRequest(
+
+        methodURL: '${URL.getURL(functionName: URL.KGetCurrentUserLogged(),baseUrl:  2)}',
+         requestHeaders: {
+    "Authorization": "Bearer $token",
+    },
+        parserFunction: (userJson) {
           return EmployModel.fromJson(json.decode(userJson)[0]);
         });
 
     print("current user>> ${responseModel.responseData}");
 
     return ResponseModel<EmployModel>(
+      responseData: (responseModel.isSuccess)?responseModel.responseData:
+      null,
+      isSuccess: responseModel.isSuccess,
+      errorModel: responseModel.errorModel,
+    );
+  }
+
+  //todo after come back
+  static Future<ResponseModel<List<LeaveModel>>> getLeaveBalance({required String token,required String code}) async {
+
+    ResponseModel responseModel = await NetworkUtilities.handleGetRequest(
+
+        methodURL: '${URL.getURL(functionName: URL.KLeaveBalance(code: code),baseUrl:  2)}',
+         requestHeaders: {
+    "Authorization": "Bearer $token",
+    },
+        parserFunction: (userJson) {
+          return leaveModelFromJson(json.decode(userJson));
+        });
+
+    print("Leave Balance>> ${responseModel.responseData}");
+
+    return ResponseModel<List<LeaveModel>>(
+      responseData: (responseModel.isSuccess)?responseModel.responseData:
+      null,
+      isSuccess: responseModel.isSuccess,
+      errorModel: responseModel.errorModel,
+    );
+  }
+
+  static Future<ResponseModel<List<PublicHolidaysModel>>> getPublicHolidays({required String token}) async {
+
+    ResponseModel responseModel = await NetworkUtilities.handleGetRequest(
+
+        methodURL: '${URL.getURL(functionName: URL.KPublicHolidays(),baseUrl:  2)}',
+         requestHeaders: {
+    "Authorization": "Bearer $token",
+    },
+        parserFunction: (userJson) {
+          return publicHolidaysModelFromJson(json.decode(userJson));
+        });
+
+    print("Public Holidays>> ${responseModel.responseData}");
+
+    return ResponseModel<List<PublicHolidaysModel>>(
+      responseData: (responseModel.isSuccess)?responseModel.responseData:
+      null,
+      isSuccess: responseModel.isSuccess,
+      errorModel: responseModel.errorModel,
+    );
+  }
+
+  static Future<ResponseModel<List<DepartmentChartModel>>> getDepartmentChart({required String token,required String code}) async {
+    ResponseModel responseModel = await NetworkUtilities.handleGetRequest(
+
+        methodURL: '${URL.getURL(functionName: URL.KDepartmentChart(code: code),baseUrl:  2)}',
+         requestHeaders: {
+    "Authorization": "Bearer $token",
+    },
+        parserFunction: (userJson) {
+          return departmentChartModelFromJson(json.decode(userJson));
+        });
+
+    print("current user>> ${responseModel.responseData}");
+
+    return ResponseModel<List<DepartmentChartModel>>(
       responseData: (responseModel.isSuccess)?responseModel.responseData:
       null,
       isSuccess: responseModel.isSuccess,
